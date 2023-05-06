@@ -1,5 +1,5 @@
 # UrlShrinker [test project]
-***
+
 #### UrlShrinker provides an API for shrink the long url.
 
 Run command: `docker-compose up`
