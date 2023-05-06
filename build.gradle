@@ -1,0 +1,71 @@
+plugins {
+	id 'application'
+	id 'checkstyle'
+	id 'org.springframework.boot' version '3.0.6'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'org.liquibase.gradle' version '2.1.1'
+}
+
+group = 'com.redgradient'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	annotationProcessor(
+			'org.projectlombok:lombok'
+	)
+	implementation(
+			'org.springframework.boot:spring-boot-starter',
+			'org.springframework.boot:spring-boot-starter-web',
+			'org.springframework.boot:spring-boot-starter-data-jpa',
+			'org.springframework.boot:spring-boot-starter-actuator',
+			'org.springframework.boot:spring-boot-starter-validation',
+
+			'com.h2database:h2:2.1.214',
+			'org.liquibase:liquibase-core:4.19.0',
+			'com.fasterxml.jackson.core:jackson-databind:2.0.1',
+			'com.github.database-rider:rider-core:1.36.0'
+	)
+	compileOnly 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	liquibaseRuntime(
+			sourceSets.main.output,
+			'com.h2database:h2:2.1.214',
+			'info.picocli:picocli:4.7.1',
+			'org.liquibase:liquibase-core:4.19.0',
+			'org.liquibase.ext:liquibase-hibernate6:4.19.0',
+			'org.springframework.boot:spring-boot-starter-data-jpa',
+	)
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+liquibase {
+	activities {
+		main {
+			changeLogFile 'src/main/resources/db/changelog/changelog-master.xml'
+
+			username ''
+			password ''
+			url 'jdbc:h2:file:./database'
+
+			referenceUrl 'hibernate:spring:com.redgradient.urlshrinker.model' +
+					'?dialect=org.hibernate.dialect.H2Dialect' +
+					'&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
+		}
+	}
+}
+
+checkstyle {
+	toolVersion '10.0'
+}
+
+application {
+	mainClass = 'com.redgradient.urlshrinker.UrlShrinkerApplication'
+}
